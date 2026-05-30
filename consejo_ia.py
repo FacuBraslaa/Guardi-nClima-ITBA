@@ -1,10 +1,9 @@
-import google.generativeai as genai
+from google import genai
 
 
 def obtener_consejo(datos_clima: dict, api_key: str) -> str | None:
     try:
-        genai.configure(api_key=api_key)
-        modelo = genai.GenerativeModel("gemini-1.5-flash")
+        cliente = genai.Client(api_key=api_key)
 
         prompt = (
             f"Sos un asistente de clima amigable que habla en español latinoamericano. "
@@ -19,7 +18,10 @@ def obtener_consejo(datos_clima: dict, api_key: str) -> str | None:
             f"Respondé en 3 o 4 oraciones como máximo, de forma directa y útil."
         )
 
-        respuesta = modelo.generate_content(prompt)
+        respuesta = cliente.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt,
+        )
         return respuesta.text.strip()
 
     except Exception as e:

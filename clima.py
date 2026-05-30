@@ -1,6 +1,5 @@
 import requests
 
-# Endpoint de la API de OpenWeatherMap para el clima actual
 API_URL = "https://api.openweathermap.org/data/2.5/weather"
 
 
@@ -8,13 +7,12 @@ def obtener_clima(ciudad: str, api_key: str) -> dict | None:
     params = {
         "q": ciudad,
         "appid": api_key,
-        "units": "metric",  # Para que la temperatura nos llegue en Celsius
-        "lang": "es",       # Descripción del clima en español
+        "units": "metric",  # celsius
+        "lang": "es",
     }
     try:
         respuesta = requests.get(API_URL, params=params, timeout=10)
 
-        # Controlamos los errores más comunes antes de procesar la respuesta
         if respuesta.status_code == 401:
             print("[!] API key inválida. Verificá tu clave de OpenWeatherMap.")
             return None
@@ -25,7 +23,6 @@ def obtener_clima(ciudad: str, api_key: str) -> dict | None:
         respuesta.raise_for_status()
         datos = respuesta.json()
 
-        # Extraemos solo lo que nos interesa mostrar
         return {
             "ciudad": datos["name"],
             "pais": datos["sys"]["country"],
@@ -48,7 +45,6 @@ def obtener_clima(ciudad: str, api_key: str) -> dict | None:
 
 
 def mostrar_clima(datos: dict):
-    # Mostramos los datos del clima de forma ordenada
     print(f"\n{'='*40}")
     print(f"  {datos['ciudad']}, {datos['pais']}")
     print(f"{'='*40}")

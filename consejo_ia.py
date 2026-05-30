@@ -1,13 +1,12 @@
 from google import genai
 
-# Probamos los modelos en este orden. Si uno está con cuota agotada, pasamos al siguiente.
+# probamos los modelos en orden, si uno tiene cuota agotada pasamos al siguiente
 _MODELOS = ["gemini-2.5-flash", "gemini-2.0-flash-lite", "gemini-2.0-flash"]
 
 
 def obtener_consejo(datos_clima: dict, api_key: str) -> str | None:
     cliente = genai.Client(api_key=api_key)
 
-    # Le damos al modelo todos los datos del clima y le pedimos un consejo de ropa concreto
     prompt = (
         f"Sos un asistente de clima amigable que habla en español latinoamericano. "
         f"Basándote en las siguientes condiciones climáticas actuales, "
@@ -23,21 +22,15 @@ def obtener_consejo(datos_clima: dict, api_key: str) -> str | None:
 
     for modelo in _MODELOS:
         try:
-            respuesta = cliente.models.generate_content(
-                model=modelo,
-                contents=prompt,
-            )
+            respuesta = cliente.models.generate_content(model=modelo, contents=prompt)
             return respuesta.text.strip()
         except Exception as e:
             msg = str(e)
-            # Si es un error de cuota, intentamos con el siguiente modelo de la lista
             if "429" in msg or "RESOURCE_EXHAUSTED" in msg or "quota" in msg.lower():
-                continue
-            # Cualquier otro error sí lo mostramos porque probablemente sea algo a revisar
+                continue  # cuota agotada, probamos con el siguiente
             print(f"[!] Error al consultar la IA: {e}")
             return None
 
-    # Si llegamos acá es porque todos los modelos estaban con cuota agotada
     print("[!] La API de Gemini alcanzó el límite de uso. Intentá de nuevo en unos minutos.")
     return None
 

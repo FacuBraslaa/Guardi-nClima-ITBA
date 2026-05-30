@@ -6,7 +6,7 @@ from historial import guardar_consulta, historial_usuario, mostrar_historial
 from estadisticas import mostrar_estadisticas
 from consejo_ia import obtener_consejo, mostrar_consejo
 
-# Cargamos las API keys desde el archivo .env para no tener que escribirlas cada vez
+# cargamos las claves del archivo .env
 load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "")
@@ -14,7 +14,6 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 
 def menu_acceso() -> str | None:
-    # Este es el primer menú que ve el usuario. Hasta que no inicie sesión o se registre, no sale de acá.
     while True:
         print("\n╔══════════════════════════════╗")
         print("║       GuardiánClima ITBA     ║")
@@ -28,11 +27,11 @@ def menu_acceso() -> str | None:
         if opcion == "1":
             usuario = login()
             if usuario:
-                return usuario  # Login exitoso, pasamos al menú principal
+                return usuario
         elif opcion == "2":
             usuario = registrar()
             if usuario:
-                return usuario  # Se registró y quedó logueado automáticamente
+                return usuario  # si se registró queda logueado directo
         elif opcion == "3":
             print("\nHasta luego!\n")
             return None
@@ -41,7 +40,6 @@ def menu_acceso() -> str | None:
 
 
 def menu_principal(usuario: str):
-    # Una vez logueado, el usuario se queda en este menú hasta que decida cerrar sesión
     while True:
         nombre_display = usuario[:19] + ".." if len(usuario) > 21 else usuario
         print(f"\n╔══════════════════════════════════════╗")
@@ -91,18 +89,15 @@ def consultar_clima(usuario: str):
     datos = obtener_clima(ciudad, OPENWEATHER_API_KEY)
     if datos:
         mostrar_clima(datos)
-        # Guardamos la consulta en el historial global para que aparezca en estadísticas
-        guardar_consulta(usuario, datos)
+        guardar_consulta(usuario, datos)  # guardamos en el historial global
 
 
 def consejo_ia_interactivo(usuario: str):
-    # Para dar un consejo necesitamos datos de clima, así que los sacamos del historial
     registros = historial_usuario(usuario)
     if not registros:
         print("\n[i] Primero consultá el clima de alguna ciudad (opción 1).")
         return
 
-    # Le mostramos las ciudades que ya consultó para que elija
     print("\nCiudades en tu historial:")
     ciudades_unicas = list(dict.fromkeys(r["ciudad"] for r in registros))
     for i, c in enumerate(ciudades_unicas, 1):
@@ -111,19 +106,17 @@ def consejo_ia_interactivo(usuario: str):
     eleccion = input("Elegí el número de ciudad (o Enter para la última): ").strip()
 
     if eleccion == "":
-        # Si no elige, usamos los datos de la última consulta
         ultimo = registros[-1]
     else:
         try:
             idx = int(eleccion) - 1
             ciudad_elegida = ciudades_unicas[idx]
-            # Tomamos la consulta más reciente de esa ciudad
+            # tomamos la consulta más reciente de esa ciudad
             ultimo = next(r for r in reversed(registros) if r["ciudad"] == ciudad_elegida)
         except (ValueError, IndexError):
             print("[!] Selección inválida.")
             return
 
-    # Armamos el diccionario con los datos que necesita la función de IA
     datos_clima = {
         "ciudad": ultimo["ciudad"],
         "pais": ultimo["pais"],
@@ -179,7 +172,6 @@ def mostrar_acerca():
     input("Presioná Enter para volver al menú...")
 
 
-# Punto de entrada de la aplicación
 if __name__ == "__main__":
     usuario_activo = menu_acceso()
     if usuario_activo:

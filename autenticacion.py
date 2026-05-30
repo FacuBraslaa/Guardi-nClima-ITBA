@@ -6,19 +6,16 @@ from validador_contrasena import validar_con_feedback
 _DIR = os.path.dirname(os.path.abspath(__file__))
 ARCHIVO_USUARIOS = os.path.join(_DIR, "usuarios_simulados.csv")
 
-# El CSV tiene tres columnas: el nombre de usuario, el salt y el hash de la contraseña.
-# Nunca guardamos la contraseña en texto plano, solo su hash.
+# tres columnas: usuario, salt y el hash de la contraseña (nunca guardamos la contraseña real)
 CAMPOS = ["usuario", "salt", "contrasena"]
 
 
 def _hashear(contrasena: str, salt: bytes) -> str:
-    # Usamos PBKDF2 con SHA-256 y 200.000 iteraciones.
-    # El salt hace que dos usuarios con la misma contraseña tengan hashes distintos.
+    # hasheamos la contraseña con PBKDF2 con SHA-256, 200k iteraciones y salt aleatorio por usuario
     return hashlib.pbkdf2_hmac("sha256", contrasena.encode("utf-8"), salt, 200_000).hex()
 
 
 def _inicializar_csv():
-    # Si el archivo no existe todavía, lo creamos con los encabezados
     if not os.path.exists(ARCHIVO_USUARIOS):
         with open(ARCHIVO_USUARIOS, "w", newline="", encoding="utf-8") as f:
             csv.DictWriter(f, fieldnames=CAMPOS).writeheader()
@@ -32,7 +29,7 @@ def _leer_usuarios() -> list[dict]:
 
 def _guardar_usuario(usuario: str, contrasena: str):
     _inicializar_csv()
-    # Generamos un salt aleatorio único para este usuario antes de hashear
+    # generamos un salt único para este usuario antes de hashear
     salt = os.urandom(16)
     hash_contrasena = _hashear(contrasena, salt)
     with open(ARCHIVO_USUARIOS, "a", newline="", encoding="utf-8") as f:
@@ -50,21 +47,24 @@ def _existe_usuario(nombre: str) -> bool:
 def login() -> str | None:
     print("\n--- Iniciar Sesión ---")
     usuario = input("Usuario: ").strip()
-    contrasena = input("Contraseña: ").strip()
 
-    for u in _leer_usuarios():
-        if u["usuario"] == usuario:
-            # Recuperamos el salt guardado y volvemos a hashear lo que ingresó el usuario.
-            # Si los hashes coinciden, la contraseña es correcta.
-            salt = bytes.fromhex(u["salt"])
-            if _hashear(contrasena, salt) == u["contrasena"]:
-                print(f"\n[✓] Bienvenido, {usuario}!")
-                return usuario
+    while True:
+        contrasena = input("Contraseña: ").strip()
 
-    print("\n[!] Usuario o contraseña incorrectos.")
-    print("[i] Si no tenés cuenta, elegí la opción 2 para registrarte.")
-    input("\nPresioná Enter para volver al menú...")
-    return None
+        for u in _leer_usuarios():
+            if u["usuario"] == usuario:
+                # reconstruimos el hash con el salt guardado y comparamos
+                salt = bytes.fromhex(u["salt"])
+                if _hashear(contrasena, salt) == u["contrasena"]:
+                    print(f"\n[✓] Bienvenido, {usuario}!")
+                    return usuario
+
+        print("\n[!] Contraseña incorrecta.")
+        reintentar = input("¿Querés intentar de nuevo? (s/n): ").strip().lower()
+        if reintentar != "s":
+            print("[i] Si no tenés cuenta, elegí la opción 2 para registrarte.")
+            input("\nPresioná Enter para volver al menú...")
+            return None
 
 
 def registrar() -> str | None:
@@ -81,7 +81,7 @@ def registrar() -> str | None:
         input("\nPresioná Enter para volver al menú...")
         return None
 
-    # Le mostramos los requisitos antes de que empiece a escribir la contraseña
+    # mostramos los requisitos antes de pedir la contraseña
     print("\nRequisitos de contraseña (debe cumplir al menos 3 de 5):")
     print("  • Mínimo 8 caracteres")
     print("  • Al menos una mayúscula")
@@ -93,7 +93,6 @@ def registrar() -> str | None:
         contrasena = input("\nElegí una contraseña: ").strip()
         if validar_con_feedback(contrasena):
             break
-        # Si no cumple los requisitos, le damos la chance de intentarlo de nuevo
         reintentar = input("¿Querés intentar con otra contraseña? (s/n): ").strip().lower()
         if reintentar != "s":
             print("[i] Registro cancelado.")

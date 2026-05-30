@@ -5,27 +5,21 @@ from historial import leer_historial
 def calcular_estadisticas() -> dict | None:
     registros = leer_historial()
 
-    # Si no hay consultas todavía, no hay nada que calcular
     if not registros:
         return None
 
-    # Counter nos da un diccionario con cuántas veces aparece cada ciudad.
-    # most_common(1) devuelve la más frecuente.
+    # Counter cuenta cuántas veces aparece cada ciudad, most_common(1) da la más frecuente
     ciudades = [r["ciudad"] for r in registros]
     ciudad_mas_consultada, cantidad = Counter(ciudades).most_common(1)[0]
 
-    # Convertimos las temperaturas a float para poder promediarlas.
-    # El try/except es por si alguna fila del CSV tiene un valor raro.
     temperaturas = []
     for r in registros:
         try:
             temperaturas.append(float(r["temperatura"]))
         except ValueError:
-            pass
+            pass  # por si hay alguna fila rara en el CSV
 
     promedio_temp = round(sum(temperaturas) / len(temperaturas), 1) if temperaturas else 0.0
-
-    # Contamos cuántos usuarios distintos hay en el historial
     usuarios_unicos = len(set(r["usuario"] for r in registros))
 
     return {

@@ -56,13 +56,17 @@ def menu_principal(usuario: str):
 
         if opcion == "1":
             consultar_clima(usuario)
+            input("\nPresioná Enter para continuar...")
         elif opcion == "2":
             registros = historial_usuario(usuario)
             mostrar_historial(registros)
+            input("\nPresioná Enter para continuar...")
         elif opcion == "3":
             mostrar_estadisticas()
+            input("\nPresioná Enter para continuar...")
         elif opcion == "4":
             consejo_ia_interactivo(usuario)
+            input("\nPresioná Enter para continuar...")
         elif opcion == "5":
             print(f"\n[✓] Sesión cerrada. Hasta pronto, {usuario}!")
             break
@@ -162,6 +166,7 @@ def mostrar_acerca():
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
 """)
+    input("Presioná Enter para volver al menú...")
 
 
 if __name__ == "__main__":

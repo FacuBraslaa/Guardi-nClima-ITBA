@@ -40,6 +40,8 @@ def login() -> str | None:
             return usuario
 
     print("\n[!] Usuario o contraseña incorrectos.")
+    print("[i] Si no tenés cuenta, elegí la opción 2 para registrarte.")
+    input("\nPresioná Enter para volver al menú...")
     return None
 
 
@@ -49,16 +51,30 @@ def registrar() -> str | None:
 
     if not usuario:
         print("[!] El nombre de usuario no puede estar vacío.")
+        input("\nPresioná Enter para volver al menú...")
         return None
 
     if _existe_usuario(usuario):
         print("[!] Ese nombre de usuario ya está en uso.")
+        input("\nPresioná Enter para volver al menú...")
         return None
 
-    contrasena = input("Elegí una contraseña: ").strip()
+    print("\nRequisitos de contraseña (debe cumplir al menos 3 de 5):")
+    print("  • Mínimo 8 caracteres")
+    print("  • Al menos una mayúscula")
+    print("  • Al menos una minúscula")
+    print("  • Al menos un número")
+    print("  • Al menos un carácter especial (!@#$%&*...)")
 
-    if not validar_con_feedback(contrasena):
-        return None
+    while True:
+        contrasena = input("\nElegí una contraseña: ").strip()
+        if validar_con_feedback(contrasena):
+            break
+        reintentar = input("¿Querés intentar con otra contraseña? (s/n): ").strip().lower()
+        if reintentar != "s":
+            print("[i] Registro cancelado.")
+            input("\nPresioná Enter para volver al menú...")
+            return None
 
     _guardar_usuario(usuario, contrasena)
     print(f"\n[✓] Usuario '{usuario}' registrado exitosamente. Iniciando sesión...")

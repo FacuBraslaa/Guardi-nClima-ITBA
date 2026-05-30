@@ -1,4 +1,3 @@
-usuario,contrasena
-facu,Facu123!
-facun,Facu123
-facu brasla,Palta123
+usuario,salt,contrasena
+facu,1cc9bbfd2815d405066e5851279a5ed2,c9d6324c058eef057fade5fc5bc627529782495bf31d88b8294559640f7c3c66
+facundo,a909d8c777712960c5cf95e71ea24522,688bdfb5ab346414e5c3de5cfdc92c4633a9f680c63bf52f3a82fb4c532e894b

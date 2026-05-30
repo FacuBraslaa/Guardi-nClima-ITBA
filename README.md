@@ -82,8 +82,7 @@ Al abrir la app aparece el **Menú de Acceso**:
 ```
 1. Iniciar sesión
 2. Registrarse
-3. Acerca de la aplicación
-4. Salir
+3. Salir
 ```
 
 Después de autenticarse, se accede al **Menú Principal**:
@@ -93,7 +92,8 @@ Después de autenticarse, se accede al **Menú Principal**:
 2. Ver mi historial
 3. Estadísticas globales
 4. Consejo de vestimenta (IA)
-5. Cerrar sesión
+5. Acerca de la aplicación
+6. Cerrar sesión
 ```
 
 La primera vez hay que registrarse (opción 2 del primer menú). Al registrarse exitosamente, la app inicia sesión de forma automática.
@@ -116,11 +116,16 @@ Si la contraseña no es suficientemente segura, la app indica exactamente qué c
 
 ---
 
-## Nota sobre seguridad
+## Seguridad de contraseñas
 
-Las contraseñas se guardan en **texto plano** en el archivo `usuarios_simulados.csv`. Esto está hecho así intencionalmente para simplificar la implementación con fines educativos.
+Las contraseñas **no se guardan en texto plano**. Antes de escribirlas en el CSV, se les aplica **PBKDF2-HMAC-SHA256** con un salt aleatorio de 16 bytes generado por usuario y 200.000 iteraciones. En el archivo solo queda el salt y el hash resultante:
 
-En un sistema real esto sería un problema grave: si alguien accede al archivo, tendría todas las contraseñas en texto legible. La solución correcta es aplicar **hashing con salt** (por ejemplo con `bcrypt` o `Argon2`) antes de guardar, de modo que ni el propio sistema pueda recuperar la contraseña original.
+```
+usuario,salt,contrasena
+facu,1cc9bbfd...,c9d6324c...
+```
+
+Esto garantiza que aunque alguien acceda al CSV, no pueda recuperar las contraseñas originales. Este es el mismo principio que usan los sistemas reales, donde librerías como `bcrypt` o `Argon2` hacen exactamente esto pero con algoritmos más modernos.
 
 ---
 

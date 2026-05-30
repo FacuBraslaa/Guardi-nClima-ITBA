@@ -20,42 +20,48 @@ Los CSV se crean solos la primera vez que corrés la app, no hace falta crearlos
 
 ---
 
-## Lo que necesitás para correrlo
+## Instalación de librerías
 
-- Python 3.10 o más nuevo
-- Conexión a internet
-- Una API key de OpenWeatherMap (es gratis, te registrás en openweathermap.org)
-- Una API key de Google Gemini (también gratis, está en aistudio.google.com)
-
----
-
-## Instalación
-
-Primero cloná el repo:
-
-```bash
-git clone https://github.com/FacuBraslaa/Guardi-nClima-ITBA.git
-cd Guardi-nClima-ITBA
-```
-
-Después instalás las dependencias:
+Ejecutar este comando en la terminal para instalar todas las dependencias:
 
 ```bash
 pip3 install requests google-genai python-dotenv
 ```
 
-Si `pip3` no te funciona probá con `pip` solo.
+> Si `pip3` no funciona, probá con `pip install requests google-genai python-dotenv`
 
-Las tres librerías que usa el proyecto son `requests` para llamar a la API del clima, `google-genai` para conectarse a Gemini y `python-dotenv` para leer las claves desde un archivo de configuración.
+| Librería | Para qué se usa |
+|---|---|
+| `requests` | Llamadas HTTP a la API de OpenWeatherMap |
+| `google-genai` | Conexión a Google Gemini (es la versión actualizada de `google-generativeai`) |
+| `python-dotenv` | Leer las API keys desde el archivo `.env` sin exponerlas en el código |
 
-Después creás un archivo `.env` en la carpeta del proyecto con tus claves:
+---
+
+## Configuración de API Keys
+
+La app necesita dos API keys para funcionar: una de OpenWeatherMap y otra de Google Gemini. Ambas son gratuitas.
+
+**¿Dónde conseguirlas?**
+- OpenWeatherMap: registrarse en [openweathermap.org](https://openweathermap.org/api) → ir a "My API Keys"
+- Google Gemini: entrar a [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey) → crear una key nueva
+
+**¿Cómo configurarlas de forma segura?**
+
+Las keys nunca deben estar escritas directamente en el código ni subirse al repositorio. Para eso se usa un archivo `.env` que se crea localmente y se agrega al `.gitignore`.
+
+Crear un archivo llamado `.env` en la raíz del proyecto con este contenido:
 
 ```
-OPENWEATHER_API_KEY=tu_clave_aqui
-GEMINI_API_KEY=tu_clave_aqui
+OPENWEATHER_API_KEY=tu_clave_de_openweathermap
+GEMINI_API_KEY=tu_clave_de_gemini
 ```
 
-Y ya podés correrlo con:
+Este archivo ya está incluido en el `.gitignore`, así que nunca va a ser subido a GitHub aunque hagas `git push`. La app lo lee automáticamente al iniciarse usando `python-dotenv`.
+
+---
+
+## Cómo ejecutar la aplicación
 
 ```bash
 python3 main.py
@@ -63,9 +69,21 @@ python3 main.py
 
 ---
 
-## Cómo funciona
+## Flujo de menús
 
-Cuando abrís la app te aparece el menú de inicio donde podés registrarte o iniciar sesión. La primera vez tenés que registrarte. Una vez adentro tenés acceso a todo:
+### Menú de acceso (antes de iniciar sesión)
+
+```
+1. Iniciar sesión
+2. Registrarse
+3. Salir
+```
+
+- **Opción 1 – Iniciar sesión**: pedí usuario y contraseña. Si son incorrectos, podés volver a intentarlo sin salir del menú.
+- **Opción 2 – Registrarse**: creás un usuario nuevo. La contraseña se valida en el momento y si no cumple los requisitos te explica qué le falta. Al registrarte exitosamente iniciás sesión de forma automática.
+- **Opción 3 – Salir**: cierra la aplicación.
+
+### Menú principal (después de iniciar sesión)
 
 ```
 1. Consultar clima de una ciudad
@@ -76,6 +94,13 @@ Cuando abrís la app te aparece el menú de inicio donde podés registrarte o in
 6. Cerrar sesión
 ```
 
+- **Opción 1 – Consultar clima**: ingresás el nombre de una ciudad y la app consulta la API de OpenWeatherMap. Muestra temperatura, sensación térmica, humedad, viento y condición. La consulta queda guardada en el historial.
+- **Opción 2 – Ver mi historial**: muestra todas las ciudades que consultaste con fecha, hora y temperatura del momento.
+- **Opción 3 – Estadísticas globales**: muestra datos del historial de todos los usuarios: total de consultas, ciudad más buscada y temperatura promedio.
+- **Opción 4 – Consejo de vestimenta (IA)**: usa los datos de una ciudad de tu historial y llama a la API de Google Gemini para generar un consejo de qué ropa ponerse.
+- **Opción 5 – Acerca de la aplicación**: muestra información sobre la app, tecnologías usadas y el sistema de seguridad de contraseñas.
+- **Opción 6 – Cerrar sesión**: vuelve al menú de acceso.
+
 ---
 
 ## Validación de contraseñas
@@ -84,7 +109,7 @@ Cuando te registrás, la contraseña tiene que cumplir al menos 3 de estos 5 cri
 
 - 8 caracteres o más
 - Una mayúscula
-- Una minúscula  
+- Una minúscula
 - Un número
 - Un carácter especial (!, @, #, etc.)
 

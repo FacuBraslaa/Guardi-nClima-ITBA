@@ -1,32 +1,40 @@
 from google import genai
 
+_MODELOS = ["gemini-2.5-flash", "gemini-2.0-flash-lite", "gemini-2.0-flash"]
+
 
 def obtener_consejo(datos_clima: dict, api_key: str) -> str | None:
-    try:
-        cliente = genai.Client(api_key=api_key)
+    cliente = genai.Client(api_key=api_key)
 
-        prompt = (
-            f"Sos un asistente de clima amigable que habla en español latinoamericano. "
-            f"Basándote en las siguientes condiciones climáticas actuales, "
-            f"dá un consejo breve y práctico sobre qué ropa usar hoy:\n\n"
-            f"- Ciudad: {datos_clima['ciudad']}, {datos_clima['pais']}\n"
-            f"- Condición: {datos_clima['descripcion']}\n"
-            f"- Temperatura: {datos_clima['temperatura']}°C\n"
-            f"- Sensación térmica: {datos_clima['sensacion']}°C\n"
-            f"- Humedad: {datos_clima['humedad']}%\n"
-            f"- Viento: {datos_clima['viento']} m/s\n\n"
-            f"Respondé en 3 o 4 oraciones como máximo, de forma directa y útil."
-        )
+    prompt = (
+        f"Sos un asistente de clima amigable que habla en español latinoamericano. "
+        f"Basándote en las siguientes condiciones climáticas actuales, "
+        f"dá un consejo breve y práctico sobre qué ropa usar hoy:\n\n"
+        f"- Ciudad: {datos_clima['ciudad']}, {datos_clima['pais']}\n"
+        f"- Condición: {datos_clima['descripcion']}\n"
+        f"- Temperatura: {datos_clima['temperatura']}°C\n"
+        f"- Sensación térmica: {datos_clima['sensacion']}°C\n"
+        f"- Humedad: {datos_clima['humedad']}%\n"
+        f"- Viento: {datos_clima['viento']} m/s\n\n"
+        f"Respondé en 3 o 4 oraciones como máximo, de forma directa y útil."
+    )
 
-        respuesta = cliente.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt,
-        )
-        return respuesta.text.strip()
+    for modelo in _MODELOS:
+        try:
+            respuesta = cliente.models.generate_content(
+                model=modelo,
+                contents=prompt,
+            )
+            return respuesta.text.strip()
+        except Exception as e:
+            msg = str(e)
+            if "429" in msg or "RESOURCE_EXHAUSTED" in msg or "quota" in msg.lower():
+                continue
+            print(f"[!] Error al consultar la IA: {e}")
+            return None
 
-    except Exception as e:
-        print(f"[!] Error al consultar la IA: {e}")
-        return None
+    print("[!] La API de Gemini alcanzó el límite de uso. Intentá de nuevo en unos minutos.")
+    return None
 
 
 def mostrar_consejo(consejo: str):

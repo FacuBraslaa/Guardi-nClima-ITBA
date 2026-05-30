@@ -1,0 +1,5 @@
+.env
+__pycache__/
+*.pyc
+usuarios_simulados.csv
+historial_global.csv

@@ -2,7 +2,8 @@ import csv
 import os
 from validador_contrasena import validar_con_feedback
 
-ARCHIVO_USUARIOS = "usuarios_simulados.csv"
+_DIR = os.path.dirname(os.path.abspath(__file__))
+ARCHIVO_USUARIOS = os.path.join(_DIR, "usuarios_simulados.csv")
 CAMPOS = ["usuario", "contrasena"]
 
 

@@ -2,7 +2,8 @@ import csv
 import os
 from datetime import datetime
 
-ARCHIVO_HISTORIAL = "historial_global.csv"
+_DIR = os.path.dirname(os.path.abspath(__file__))
+ARCHIVO_HISTORIAL = os.path.join(_DIR, "historial_global.csv")
 CAMPOS = ["fecha", "hora", "usuario", "ciudad", "pais", "temperatura", "sensacion", "humedad", "viento", "descripcion"]
 
 

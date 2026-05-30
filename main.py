@@ -1,9 +1,12 @@
 import os
+from dotenv import load_dotenv
 from autenticacion import login, registrar
 from clima import obtener_clima, mostrar_clima
 from historial import guardar_consulta, historial_usuario, mostrar_historial
 from estadisticas import mostrar_estadisticas
 from consejo_ia import obtener_consejo, mostrar_consejo
+
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")

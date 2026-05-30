@@ -50,5 +50,6 @@ def mostrar_historial(registros: list[dict]):
     print(f"  {'FECHA':<12} {'HORA':<10} {'CIUDAD':<20} {'TEMP':>6}")
     print(f"{'='*60}")
     for r in registros:
-        print(f"  {r['fecha']:<12} {r['hora']:<10} {r['ciudad']:<20} {r['temperatura']:>5}°C")
+        ciudad = r['ciudad'][:18] + ".." if len(r['ciudad']) > 20 else r['ciudad']
+        print(f"  {r['fecha']:<12} {r['hora']:<10} {ciudad:<20} {r['temperatura']:>5}°C")
     print(f"{'='*60}")

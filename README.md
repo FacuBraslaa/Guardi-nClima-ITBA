@@ -1,48 +1,37 @@
 # GuardiánClima ITBA
 
-Aplicación de consola en Python que permite consultar el clima en tiempo real, gestionar usuarios, registrar un historial de consultas y recibir consejos de vestimenta generados por Inteligencia Artificial.
+GuardiánClima es una aplicación de consola desarrollada en Python como trabajo práctico integrador para la materia de Tecnología del ITBA. La idea fue construir algo que combine todo lo que vimos durante el año: programación en Python, consumo de APIs, manejo de datos, inteligencia artificial y conceptos de ciberseguridad.
+
+La app permite registrarse, iniciar sesión, consultar el clima de cualquier ciudad del mundo en tiempo real, ver un historial personal de consultas, revisar estadísticas globales entre todos los usuarios, y recibir un consejo de vestimenta generado por IA según las condiciones climáticas del momento.
 
 ---
 
-## Características
+## ¿Qué hace cada parte?
 
-- Registro e inicio de sesión de usuarios con validación de contraseña
-- Consulta del clima en tiempo real mediante la API de OpenWeatherMap
-- Historial personal de consultas guardado en CSV
-- Estadísticas globales: ciudad más consultada, temperatura promedio y usuarios únicos
-- Consejos de vestimenta generados por Google Gemini según las condiciones climáticas
-- Sección "Acerca de" con nota educativa sobre seguridad de contraseñas
+| Módulo | Descripción |
+|---|---|
+| `main.py` | Punto de entrada. Maneja los dos menús: el de acceso y el principal |
+| `autenticacion.py` | Registro e inicio de sesión con lectura/escritura de CSV |
+| `validador_contrasena.py` | Valida que la contraseña cumpla criterios de seguridad |
+| `clima.py` | Consulta a la API de OpenWeatherMap y muestra los datos |
+| `historial.py` | Guarda y lee el historial global de consultas en CSV |
+| `estadisticas.py` | Calcula estadísticas sobre el historial (ciudad más buscada, promedio de temperatura, etc.) |
+| `consejo_ia.py` | Llama a la API de Google Gemini para generar un consejo de ropa |
 
----
-
-## Estructura del proyecto
-
-```
-GuardiánClima-ITBA/
-├── main.py                  # Punto de entrada y menús
-├── autenticacion.py         # Login y registro de usuarios
-├── validador_contrasena.py  # Validación de seguridad de contraseñas
-├── clima.py                 # Consulta a la API de OpenWeatherMap
-├── historial.py             # Lectura y escritura del historial global
-├── estadisticas.py          # Estadísticas calculadas sobre el historial
-├── consejo_ia.py            # Consejos de vestimenta via Google Gemini
-├── usuarios_simulados.csv   # Base de datos de usuarios (generado automáticamente)
-├── historial_global.csv     # Historial de consultas (generado automáticamente)
-└── README.md
-```
+Los archivos `usuarios_simulados.csv` e `historial_global.csv` se crean automáticamente la primera vez que se ejecuta la app.
 
 ---
 
-## Requisitos
+## Requisitos previos
 
 - Python 3.10 o superior
 - Conexión a internet
-- Clave de API de [OpenWeatherMap](https://openweathermap.org/api) (gratuita)
-- Clave de API de [Google Gemini](https://aistudio.google.com/app/apikey) (gratuita)
+- Una API key gratuita de [OpenWeatherMap](https://openweathermap.org/api)
+- Una API key gratuita de [Google Gemini](https://aistudio.google.com/app/apikey)
 
 ---
 
-## Instalación
+## Cómo instalarlo y correrlo
 
 ### 1. Clonar el repositorio
 
@@ -51,64 +40,69 @@ git clone https://github.com/FacuBraslaa/Guardi-nClima-ITBA.git
 cd Guardi-nClima-ITBA
 ```
 
-### 2. Instalar dependencias
+### 2. Instalar las dependencias
+
+Ejecutar el siguiente comando en la terminal para instalar todas las librerías necesarias:
 
 ```bash
-pip install requests google-generativeai
+pip3 install requests google-genai python-dotenv
 ```
+
+| Librería | Para qué se usa |
+|---|---|
+| `requests` | Hacer llamadas HTTP a la API de OpenWeatherMap |
+| `google-genai` | Conectarse a la API de Google Gemini (IA generativa) |
+| `python-dotenv` | Leer las API keys desde el archivo `.env` automáticamente |
+
+> Si `pip3` no funciona, probá con `pip install requests google-genai python-dotenv`
 
 ### 3. Configurar las API keys
 
-Las claves se leen desde variables de entorno. Configurarlas antes de ejecutar:
+Crear un archivo `.env` en la raíz del proyecto con el siguiente contenido:
 
-**En Linux/macOS:**
-```bash
-export OPENWEATHER_API_KEY="tu_clave_openweather"
-export GEMINI_API_KEY="tu_clave_gemini"
+```
+OPENWEATHER_API_KEY=tu_clave_de_openweathermap
+GEMINI_API_KEY=tu_clave_de_gemini
 ```
 
-**En Windows (CMD):**
-```cmd
-set OPENWEATHER_API_KEY=tu_clave_openweather
-set GEMINI_API_KEY=tu_clave_gemini
-```
+La app lo lee automáticamente al iniciarse. No hace falta configurar variables de entorno manualmente.
 
-**En Windows (PowerShell):**
-```powershell
-$env:OPENWEATHER_API_KEY="tu_clave_openweather"
-$env:GEMINI_API_KEY="tu_clave_gemini"
-```
-
-### 4. Ejecutar la aplicación
+### 4. Ejecutar
 
 ```bash
-python main.py
+python3 main.py
 ```
 
 ---
 
-## Flujo de la aplicación
+## Flujo de uso
+
+Al abrir la app aparece el **Menú de Acceso**:
 
 ```
-Menú de Acceso
-├── 1. Iniciar sesión
-├── 2. Registrarse
-├── 3. Acerca de la aplicación
-└── 4. Salir
-
-Menú Principal (post-login)
-├── 1. Consultar clima de una ciudad
-├── 2. Ver mi historial
-├── 3. Estadísticas globales
-├── 4. Consejo de vestimenta (IA)
-└── 5. Cerrar sesión
+1. Iniciar sesión
+2. Registrarse
+3. Acerca de la aplicación
+4. Salir
 ```
+
+Después de autenticarse, se accede al **Menú Principal**:
+
+```
+1. Consultar clima de una ciudad
+2. Ver mi historial
+3. Estadísticas globales
+4. Consejo de vestimenta (IA)
+5. Cerrar sesión
+```
+
+La primera vez hay que registrarse (opción 2 del primer menú). Al registrarse exitosamente, la app inicia sesión de forma automática.
 
 ---
 
 ## Validación de contraseñas
 
-Al registrarse, la contraseña debe cumplir **al menos 3** de los siguientes 5 criterios:
+Una de las cosas que más me interesó implementar fue la validación de contraseñas, que aplica conceptos de ciberseguridad vistos en el curso. Al registrarse, el sistema evalúa 5 criterios y exige que se cumplan **al menos 3**:
 
 | Criterio | Requisito |
 |---|---|
@@ -118,24 +112,26 @@ Al registrarse, la contraseña debe cumplir **al menos 3** de los siguientes 5 c
 | Número | Al menos un dígito |
 | Carácter especial | Al menos uno de `! @ # $ % & * ( ) , . ?` |
 
-Si la contraseña no es válida, el sistema indica qué criterios no se cumplen y ofrece sugerencias para mejorarla.
+Si la contraseña no es suficientemente segura, la app indica exactamente qué criterios faltan y da la opción de intentarlo de nuevo sin tener que empezar el registro desde cero.
 
 ---
 
-## Nota de seguridad
+## Nota sobre seguridad
 
-Las contraseñas se almacenan en **texto plano** dentro de `usuarios_simulados.csv`. Esto es intencional con fines **educativos** para simplificar la implementación.
+Las contraseñas se guardan en **texto plano** en el archivo `usuarios_simulados.csv`. Esto está hecho así intencionalmente para simplificar la implementación con fines educativos.
 
-En un sistema real, las contraseñas nunca deben guardarse en texto plano. La práctica recomendada es aplicar un algoritmo de **hashing con salt**, como `bcrypt` o `Argon2`, de modo que incluso si la base de datos es comprometida, las contraseñas originales no puedan ser recuperadas.
+En un sistema real esto sería un problema grave: si alguien accede al archivo, tendría todas las contraseñas en texto legible. La solución correcta es aplicar **hashing con salt** (por ejemplo con `bcrypt` o `Argon2`) antes de guardar, de modo que ni el propio sistema pueda recuperar la contraseña original.
 
 ---
 
-## Tecnologías y conceptos aplicados
+## Conceptos del curso aplicados
 
-| Área | Concepto |
+Este proyecto integra contenido de los cinco bloques del curso:
+
+| Bloque | Concepto aplicado |
 |---|---|
-| Python | Módulos, funciones, manejo de archivos, excepciones |
-| Redes | Consumo de APIs REST con `requests`, códigos HTTP |
-| IA | Generación de texto con Google Gemini (LLM) |
-| Ciberseguridad | Validación de contraseñas, hashing, almacenamiento seguro |
+| Python | Módulos, funciones, manejo de archivos CSV, excepciones, type hints |
+| Inteligencia Artificial | API de Google Gemini para generación de texto (LLM) |
+| Redes | Consumo de APIs REST con `requests`, manejo de códigos HTTP |
+| Ciberseguridad | Validación de contraseñas por criterios, conciencia sobre hashing |
 | Análisis de datos | Procesamiento de CSV, estadísticas con `collections.Counter` |

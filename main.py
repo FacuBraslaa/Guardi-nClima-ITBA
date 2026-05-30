@@ -44,7 +44,8 @@ def menu_acceso() -> str | None:
 def menu_principal(usuario: str):
     while True:
         print(f"\n╔══════════════════════════════════════╗")
-        print(f"║   Bienvenido, {usuario:<22}║")
+        nombre_display = usuario[:19] + ".." if len(usuario) > 21 else usuario
+        print(f"║   Bienvenido, {nombre_display:<22}║")
         print(f"╠══════════════════════════════════════╣")
         print(f"║  1. Consultar clima de una ciudad    ║")
         print(f"║  2. Ver mi historial                 ║")
